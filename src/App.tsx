@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
+import Box from "./components/BoxTest";
+import { Canvas } from "@react-three/fiber";
 
 interface nowPlaying {
   title: string;
@@ -51,15 +53,18 @@ function App() {
 
   async function getIsPlaying(sdk: SpotifyApi) {
     const temp = await sdk.player.getPlaybackState();
-    stats.isActive = temp.is_playing;
 
-    if (!stats.isActive) {
+    if (temp === null) {
+      return;
+    }
+    if (temp.is_playing === null) {
       return;
     }
     if (temp.currently_playing_type != "track") {
       return;
     }
 
+    stats.isActive = temp.is_playing;
     getSongAnalytics(sdk, temp.item.id);
     getTrackInfo(sdk, temp.item.id);
 
@@ -106,7 +111,16 @@ function App() {
             </button>
           </div>
         ) : (
-          <h1>logged in</h1>
+          <>
+            <h1>logged in</h1>
+            <Canvas>
+              <ambientLight intensity={0.5} />
+              <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+              <pointLight position={[-10, -10, -10]} />
+              <Box position={[-1.2, 0, 0]} />
+              <Box position={[1.2, 0, 0]} />
+            </Canvas>
+          </>
         )}
       </div>
     </>
