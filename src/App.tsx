@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
 import Box from "./components/BoxTest";
 import { Canvas } from "@react-three/fiber";
-
+import Nav from "./components/UI";
 interface nowPlaying {
   title: string;
   image: string | Image;
@@ -99,7 +99,7 @@ function App() {
 
   return (
     <>
-      <div className="h-screen w-screen">
+      <div className="h-screen w-screen bg-slate-600/75">
         {spotUser == null ? (
           <div className="flex justify-center items-center flex-col h-screen ">
             <h1>Welcome! Please Connect your spotify account</h1>
@@ -112,14 +112,14 @@ function App() {
           </div>
         ) : (
           <>
-            <h1>logged in</h1>
-            <Canvas>
+            <Nav></Nav>
+            {/* <Canvas>
               <ambientLight intensity={0.5} />
               <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
               <pointLight position={[-10, -10, -10]} />
               <Box position={[-1.2, 0, 0]} />
               <Box position={[1.2, 0, 0]} />
-            </Canvas>
+            </Canvas> */}
           </>
         )}
       </div>
