@@ -3,9 +3,12 @@ import { Image } from "@spotify/web-api-ts-sdk";
 
 interface UIProps {
   img: Image | undefined;
+  title: string | undefined;
+  artist: string | undefined;
+  album: string | undefined;
 }
 
-function Nav({ img }: UIProps) {
+function PlayerDefault({ img, title, artist, album }: UIProps) {
   return (
     <>
       <section className="flex justify-center items-center flex-col h-screen w-screen">
@@ -24,15 +27,19 @@ function Nav({ img }: UIProps) {
           <div className="flex flex-col flex-shrink-0 w-full justify-center px-10 gap-12">
             <div className="relative">
               <img
-                src={img == undefined ? "vite.svg" : img.url}
+                src={img === undefined ? "nosong.png" : img.url}
                 className="rounded-2xl h-auto w-full shadow-md bg-black"
               />
             </div>
             <div className="flex flex-col w-full text-white break-words">
-              <h1 className="text-4xl font-bold">now playing this</h1>
-              <h2 className="text-2xl font-bold">artist name(s) go here</h2>
+              <h1 className="text-4xl font-bold">
+                {title === undefined ? "No Song Is Playing" : title}
+              </h1>
+              <h2 className="text-2xl font-bold">
+                {artist === undefined ? "Please Play A Song" : artist}
+              </h2>
               <h3 className="text-xl font-semibold opacity-80">
-                album name goes here
+                {album === undefined ? "" : album}
               </h3>
             </div>
           </div>
@@ -42,4 +49,4 @@ function Nav({ img }: UIProps) {
   );
 }
 
-export default Nav;
+export default PlayerDefault;

@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
 // import Box from "./components/BoxTest";
 // import { Canvas } from "@react-three/fiber";
-import Nav from "./components/UI";
+import PlayerDefault from "./components/PlayerDefault";
 interface nowPlaying {
   title: string;
-  image: Image | undefined;
+  image: Image;
   artist: string;
   uris: string;
   songID: string;
+  album: string;
 }
 
 interface statusInfo {
@@ -46,7 +47,7 @@ function App() {
     );
 
     const user = await sdk.currentUser.profile();
-    console.log(user.email);
+    console.log(sdk, user);
     setSpotUser(sdk);
   }
 
@@ -75,9 +76,10 @@ function App() {
     const track: nowPlaying = {
       image: temp.album.images[0],
       title: temp.name,
-      artist: temp.artists[0].name,
+      artist: temp.artists.map((artist) => artist.name).join(" "),
       uris: temp.uri,
       songID: temp.id,
+      album: temp.album.name,
     };
 
     stats.nowPlaying = track;
@@ -115,8 +117,11 @@ function App() {
           </div>
         ) : (
           <>
-            <Nav
+            <PlayerDefault
               img={appInfo === null ? undefined : appInfo.nowPlaying?.image}
+              title={appInfo === null ? undefined : appInfo.nowPlaying?.title}
+              artist={appInfo === null ? undefined : appInfo.nowPlaying?.artist}
+              album={appInfo === null ? undefined : appInfo.nowPlaying?.album}
             />
             {/* <Canvas>
               <ambientLight intensity={0.5} />
