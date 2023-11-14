@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
-import Box from "./components/BoxTest";
-import { Canvas } from "@react-three/fiber";
+// import Box from "./components/BoxTest";
+// import { Canvas } from "@react-three/fiber";
 import Nav from "./components/UI";
 interface nowPlaying {
   title: string;
-  image: string | Image;
+  image: Image | undefined;
   artist: string;
   uris: string;
   songID: string;
@@ -21,7 +20,7 @@ interface statusInfo {
   nowPlaying?: nowPlaying | undefined;
 }
 
-let stats: statusInfo = {
+const stats: statusInfo = {
   isActive: false,
   firstSong: false,
   hasAnalyis: false,
@@ -65,8 +64,8 @@ function App() {
     }
 
     stats.isActive = temp.is_playing;
-    getSongAnalytics(sdk, temp.item.id);
-    getTrackInfo(sdk, temp.item.id);
+    await getSongAnalytics(sdk, temp.item.id);
+    await getTrackInfo(sdk, temp.item.id);
 
     setAppInfo(stats);
   }
@@ -83,16 +82,20 @@ function App() {
 
     stats.nowPlaying = track;
   }
+
   async function getSongAnalytics(sdk: SpotifyApi, id: string) {
     const temp = await sdk.tracks.audioAnalysis(id);
     stats.hasAnalyis = true;
     stats.firstSong = false;
     stats.audioAnalyis = temp;
   }
+
   useEffect(() => {
-    if (spotUser == null) {
+    if (spotUser === null) {
+      console.log("not logged in or error");
       return;
     }
+    console.log("here");
 
     getIsPlaying(spotUser);
   }, [spotUser]);
@@ -112,7 +115,9 @@ function App() {
           </div>
         ) : (
           <>
-            <Nav></Nav>
+            <Nav
+              img={appInfo === null ? undefined : appInfo.nowPlaying?.image}
+            />
             {/* <Canvas>
               <ambientLight intensity={0.5} />
               <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />

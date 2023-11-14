@@ -1,5 +1,11 @@
 // import * as Switch from "@radix-ui/react-switch";
-function Nav() {
+import { Image } from "@spotify/web-api-ts-sdk";
+
+interface UIProps {
+  img: Image | undefined;
+}
+
+function Nav({ img }: UIProps) {
   return (
     <>
       <section className="flex justify-center items-center flex-col h-screen w-screen">
@@ -18,7 +24,7 @@ function Nav() {
           <div className="flex flex-col flex-shrink-0 w-full justify-center px-10 gap-12">
             <div className="relative">
               <img
-                src="vite.svg"
+                src={img == undefined ? "vite.svg" : img.url}
                 className="rounded-2xl h-auto w-full shadow-md bg-black"
               />
             </div>
