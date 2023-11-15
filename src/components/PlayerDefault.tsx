@@ -1,4 +1,5 @@
 // import * as Switch from "@radix-ui/react-switch";
+import * as Slider from "@radix-ui/react-slider";
 import { Image } from "@spotify/web-api-ts-sdk";
 
 interface UIProps {
@@ -41,6 +42,26 @@ function PlayerDefault({ img, title, artist, album }: UIProps) {
               <h3 className="text-xl font-semibold opacity-80">
                 {album === undefined ? "" : album}
               </h3>
+              <div className="pt-4">
+                <div className="flex justify-between text-lg font-medium text-white">
+                  <span>0:00</span>
+                  <span>3:23</span>
+                </div>
+                <Slider.Root
+                  className="relative flex items-center w-full"
+                  defaultValue={[85]}
+                  max={100}
+                  step={1}
+                >
+                  <Slider.Track className="relative flex-grow h-1 bg-gray-700 rounded-full">
+                    <Slider.Range className="absolute bg-white rounded-full h-full" />
+                  </Slider.Track>
+                  <Slider.Thumb
+                    className="block w-3 h-3 bg-white shadow rounded-xl"
+                    aria-label="TrackProgress"
+                  />
+                </Slider.Root>
+              </div>
             </div>
           </div>
         </div>
