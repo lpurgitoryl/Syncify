@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
 // import Box from "./components/BoxTest";
 // import { Canvas } from "@react-three/fiber";
+
 import PlayerDefault from "./components/PlayerDefault";
+
 interface nowPlaying {
   title: string;
   image: Image;
@@ -17,8 +19,10 @@ interface statusInfo {
   firstSong: boolean;
   hasAnalyis: boolean;
   audioAnalyis: AudioAnalysis | undefined;
-  energy: number;
   nowPlaying?: nowPlaying | undefined;
+  energy: number;
+  songDuration: number;
+  songProgress: number;
 }
 
 const stats: statusInfo = {
@@ -28,6 +32,8 @@ const stats: statusInfo = {
   energy: 0,
   audioAnalyis: undefined,
   nowPlaying: undefined,
+  songDuration: 0,
+  songProgress: 0,
 };
 
 function App() {
@@ -55,20 +61,33 @@ function App() {
     const temp = await sdk.player.getPlaybackState();
 
     if (temp === null) {
+      console.log("Error! Please Check Network Connection");
       return;
     }
     if (temp.is_playing === null) {
+      console.log("Error! Please Play A Song On Spotify");
       return;
     }
     if (temp.currently_playing_type != "track") {
+      console.log("Error! Please Play A Song On Spotify");
       return;
     }
 
     stats.isActive = temp.is_playing;
-    await getSongAnalytics(sdk, temp.item.id);
+
+    if (!stats.isActive) {
+      console.log("No Song is currently Playing");
+      setAppInfo(stats);
+      return;
+    }
+
+    stats.songProgress = temp.progress_ms;
+
+    await getSongAnalysis(sdk, temp.item.id);
     await getTrackInfo(sdk, temp.item.id);
 
     setAppInfo(stats);
+    console.log(stats);
   }
 
   async function getTrackInfo(sdk: SpotifyApi, id: string) {
@@ -82,25 +101,33 @@ function App() {
       album: temp.album.name,
     };
 
+    stats.songDuration = temp.duration_ms;
     stats.nowPlaying = track;
   }
 
-  async function getSongAnalytics(sdk: SpotifyApi, id: string) {
+  async function getSongAnalysis(sdk: SpotifyApi, id: string) {
     const temp = await sdk.tracks.audioAnalysis(id);
+    // if (temp === null) {
+    //   stats.hasAnalyis = false;
+    //   stats.firstSong = false;
+    // }
     stats.hasAnalyis = true;
     stats.firstSong = false;
     stats.audioAnalyis = temp;
   }
 
+  // inital sdk setup
   useEffect(() => {
     if (spotUser === null) {
       console.log("not logged in or error");
       return;
     }
-    console.log("here");
+    console.log("init sdk set up");
 
     getIsPlaying(spotUser);
   }, [spotUser]);
+
+  // call once every second so that the player is up to date with any changes
 
   return (
     <>
@@ -122,6 +149,8 @@ function App() {
               title={appInfo === null ? undefined : appInfo.nowPlaying?.title}
               artist={appInfo === null ? undefined : appInfo.nowPlaying?.artist}
               album={appInfo === null ? undefined : appInfo.nowPlaying?.album}
+              startTime={appInfo === null ? undefined : appInfo.songProgress}
+              endTime={appInfo === null ? undefined : appInfo.songDuration}
             />
             {/* <Canvas>
               <ambientLight intensity={0.5} />

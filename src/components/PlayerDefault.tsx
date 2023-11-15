@@ -1,15 +1,25 @@
 // import * as Switch from "@radix-ui/react-switch";
 import * as Slider from "@radix-ui/react-slider";
 import { Image } from "@spotify/web-api-ts-sdk";
+import formatDuration from "format-duration";
 
 interface UIProps {
   img: Image | undefined;
   title: string | undefined;
   artist: string | undefined;
   album: string | undefined;
+  startTime: number | undefined;
+  endTime: number | undefined;
 }
 
-function PlayerDefault({ img, title, artist, album }: UIProps) {
+function PlayerDefault({
+  img,
+  title,
+  artist,
+  album,
+  startTime,
+  endTime,
+}: UIProps) {
   return (
     <>
       <section className="flex justify-center items-center flex-col h-screen w-screen">
@@ -44,12 +54,18 @@ function PlayerDefault({ img, title, artist, album }: UIProps) {
               </h3>
               <div className="pt-4">
                 <div className="flex justify-between text-lg font-medium text-white">
-                  <span>0:00</span>
-                  <span>3:23</span>
+                  <span>
+                    {startTime === undefined
+                      ? "0:00"
+                      : formatDuration(startTime)}
+                  </span>
+                  <span>
+                    {endTime === undefined ? "0:00" : formatDuration(endTime)}
+                  </span>
                 </div>
                 <Slider.Root
                   className="relative flex items-center w-full"
-                  defaultValue={[85]}
+                  defaultValue={[0]}
                   max={100}
                   step={1}
                 >
