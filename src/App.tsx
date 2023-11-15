@@ -4,6 +4,7 @@ import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
 // import { Canvas } from "@react-three/fiber";
 
 import PlayerDefault from "./components/PlayerDefault";
+// import Throttle from "lodash/throttle";
 
 interface nowPlaying {
   title: string;
@@ -75,7 +76,7 @@ function App() {
 
     stats.isActive = temp.is_playing;
 
-    if (!stats.isActive) {
+    if (!stats.isActive && !stats.firstSong) {
       console.log("No Song is currently Playing");
       setAppInfo(stats);
       return;
@@ -107,13 +108,24 @@ function App() {
 
   async function getSongAnalysis(sdk: SpotifyApi, id: string) {
     const temp = await sdk.tracks.audioAnalysis(id);
-    // if (temp === null) {
-    //   stats.hasAnalyis = false;
-    //   stats.firstSong = false;
-    // }
+    if (temp === null) {
+      stats.hasAnalyis = false;
+      stats.firstSong = false;
+      return;
+    }
     stats.hasAnalyis = true;
-    stats.firstSong = false;
+    stats.firstSong = true;
     stats.audioAnalyis = temp;
+  }
+
+  async function loopy() {
+    if (spotUser === null) {
+      return;
+    }
+    // deal with this here bc i shouldnt call it multiple times
+    setInterval(() => {
+      getIsPlaying(spotUser);
+    }, 800);
   }
 
   // inital sdk setup
@@ -124,7 +136,8 @@ function App() {
     }
     console.log("init sdk set up");
 
-    getIsPlaying(spotUser);
+    // getIsPlaying(spotUser);
+    loopy();
   }, [spotUser]);
 
   // call once every second so that the player is up to date with any changes
