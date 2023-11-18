@@ -44,9 +44,23 @@ function App() {
   const [intervalID, setIntervalID] = useState(0);
 
   async function authSpotifyUser() {
+    const myUrlPattern = "http://localhost:5173/";
+    let isLocal = true;
+
+    if (
+      window.location.hostname === "localhost" ||
+      window.location.hostname.indexOf(myUrlPattern) >= 0
+    ) {
+      alert("It's a local server!");
+    } else {
+      isLocal = false;
+    }
+
     const sdk = SpotifyApi.withUserAuthorization(
       import.meta.env.VITE_SPOTIFY_CLIENT_ID,
-      import.meta.env.VITE_REDIRECT_TARGET,
+      isLocal
+        ? import.meta.env.VITE_LOCAL_REDIRECT_TARGET
+        : import.meta.env.VITE_DEV_REDIRECT_TARGET,
       [
         "user-read-playback-state",
         "user-modify-playback-state",
