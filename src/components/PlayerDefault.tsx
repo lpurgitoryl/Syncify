@@ -26,14 +26,6 @@ function formatPercentage(
   return temp;
 }
 
-// function bgClassNames(img: Image | undefined): string {
-//   if (img === undefined) {
-//     return `absolute h-screen w-screen bg-[url("nosong.png")] bg-cover blur-lg`;
-//   }
-
-//   return `absolute h-screen w-screen bg-[url(${img})] bg-cover blur-lg`;
-// }
-// className="absolute h-screen w-screen bg-[url(https://placekitten.com/1400)] bg-cover blur-lg"
 function PlayerDefault({
   img,
   title,
@@ -45,13 +37,6 @@ function PlayerDefault({
   return (
     <>
       <section className="flex justify-center items-center flex-col h-screen w-screen">
-        {/* <div className="absolute bg-cover bg-center transition-[background] duration-[2s] ease-in-out z-[-10] h-full w-full blur-2xl transform-gpu">
-          <img
-            className="h-full w-full bg-auto"
-            src={img === undefined ? "nosong.png" : img.url}
-          ></img>
-        </div> */}
-
         <div className="h-full w-full flex align-center justify-center">
           <div className="flex flex-col flex-shrink-0 w-full justify-center px-10 gap-12 md:flex-row md:items-center lg:px-28">
             <div className="relative lg:w-10/12">
@@ -91,7 +76,7 @@ function PlayerDefault({
                   value={[formatPercentage(startTime, endTime)]}
                 >
                   <Slider.Track className="relative flex-grow h-2 bg-gray-700 rounded-full lg:h-4">
-                    <Slider.Range className="absolute bg-white rounded-full h-full" />
+                    <Slider.Range className="absolute bg-white rounded-s-full h-full" />
                   </Slider.Track>
                   <Slider.Thumb
                     className="block w-3 h-3 bg-white shadow rounded-xl lg:h-6 lg:w-6"

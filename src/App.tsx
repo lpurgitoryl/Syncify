@@ -5,6 +5,7 @@ import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
 
 import PlayerDefault from "./components/PlayerDefault";
 import Debounce from "lodash/debounce";
+import UserOverlay from "./components/UserOverlay";
 
 interface nowPlaying {
   title: string;
@@ -166,18 +167,16 @@ function App() {
 
   return (
     <>
-      <div className="h-screen w-screen bg-slate-600/75">
-        <div className="absolute bg-cover bg-center transition-[background] duration-[2s] ease-in-out z-[-10] h-full w-full blur-2xl transform-gpu">
-          <img
-            className="h-full w-full bg-auto"
-            src={
-              appInfo === null ? "nosong.png" : appInfo.nowPlaying?.image.url
-            }
-          ></img>
-        </div>
+      <div className="h-screen w-screen">
+        <UserOverlay
+          img={appInfo === null ? undefined : appInfo.nowPlaying?.image}
+        />
+
         {spotUser == null ? (
-          <div className="flex justify-center items-center flex-col h-screen ">
-            <h1>Welcome! Please Connect your spotify account</h1>
+          <div className="flex justify-center items-center flex-col h-screen gap-4">
+            <h1 className="text-3xl text-center md:text-5xl text-white font-bold">
+              Welcome! Please Connect your spotify account
+            </h1>
             <button
               onClick={authSpotifyUser}
               className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
