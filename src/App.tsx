@@ -4,7 +4,7 @@ import { SpotifyApi, AudioAnalysis, Image } from "@spotify/web-api-ts-sdk";
 // import { Canvas } from "@react-three/fiber";
 
 import PlayerDefault from "./components/PlayerDefault";
-// import Throttle from "lodash/throttle";
+import Debounce from "lodash/debounce";
 
 interface nowPlaying {
   title: string;
@@ -40,6 +40,7 @@ const stats: statusInfo = {
 function App() {
   const [appInfo, setAppInfo] = useState<statusInfo | null>(null);
   const [spotUser, setSpotUser] = useState<SpotifyApi | null>(null);
+  const [intervalID, setIntervalID] = useState(0);
 
   async function authSpotifyUser() {
     const sdk = SpotifyApi.withUserAuthorization(
@@ -53,22 +54,29 @@ function App() {
       ]
     );
 
+    // this is just to create the redirect, I dont actually use the user's email info
     const user = await sdk.currentUser.profile();
     console.log(sdk, user);
     setSpotUser(sdk);
   }
 
-  async function getIsPlaying(sdk: SpotifyApi) {
+  async function getIsPlaying(sdk: SpotifyApi | null) {
+    if (sdk === null) {
+      console.log("Error! User not logged in yet");
+      return;
+    }
     const temp = await sdk.player.getPlaybackState();
 
     if (temp === null) {
       console.log("Error! Please Check Network Connection");
       return;
     }
+
     if (temp.is_playing === null) {
       console.log("Error! Please Play A Song On Spotify");
       return;
     }
+
     if (temp.currently_playing_type != "track") {
       console.log("Error! Please Play A Song On Spotify");
       return;
@@ -76,19 +84,32 @@ function App() {
 
     stats.isActive = temp.is_playing;
 
-    if (!stats.isActive && !stats.firstSong) {
+    if (!stats.isActive) {
       console.log("No Song is currently Playing");
+      return;
+    }
+
+    if (
+      stats.nowPlaying != undefined &&
+      temp.item.name === stats.nowPlaying?.title
+    ) {
+      console.log("same song, update only progress");
+      stats.songProgress = temp.progress_ms;
+      console.log(stats.songProgress);
       setAppInfo(stats);
       return;
     }
 
+    // else this is a totally new track so update all info
     stats.songProgress = temp.progress_ms;
+    stats.songDuration = temp.item.duration_ms;
 
-    await getSongAnalysis(sdk, temp.item.id);
+    console.log(temp);
+
+    // await getSongAnalysis(sdk, temp.item.id);
     await getTrackInfo(sdk, temp.item.id);
 
     setAppInfo(stats);
-    console.log(stats);
   }
 
   async function getTrackInfo(sdk: SpotifyApi, id: string) {
@@ -102,31 +123,34 @@ function App() {
       album: temp.album.name,
     };
 
-    stats.songDuration = temp.duration_ms;
     stats.nowPlaying = track;
   }
 
-  async function getSongAnalysis(sdk: SpotifyApi, id: string) {
-    const temp = await sdk.tracks.audioAnalysis(id);
-    if (temp === null) {
-      stats.hasAnalyis = false;
-      stats.firstSong = false;
-      return;
-    }
-    stats.hasAnalyis = true;
-    stats.firstSong = true;
-    stats.audioAnalyis = temp;
-  }
+  // async function getSongAnalysis(sdk: SpotifyApi, id: string) {
+  //   const temp = await sdk.tracks.audioAnalysis(id);
+  //   if (temp === null) {
+  //     stats.hasAnalyis = false;
+  //     stats.firstSong = false;
+  //     return;
+  //   }
+  //   stats.hasAnalyis = true;
+  //   stats.firstSong = true;
+  //   stats.audioAnalyis = temp;
+  // }
 
-  async function loopy() {
-    if (spotUser === null) {
-      return;
+  // increment counter every second to update isPlaying
+  // A debounced function is a function that delays its execution a certain amount of milliseconds after the last call was received
+  // This is called every 500ms
+  // 8 hours is 57600ms
+  const debounceInterval = Debounce(() => {
+    let temp = intervalID;
+    temp += 1;
+    const eightHours = 57600;
+    if (temp >= eightHours) {
+      temp = 0;
     }
-    // deal with this here bc i shouldnt call it multiple times
-    setInterval(() => {
-      getIsPlaying(spotUser);
-    }, 800);
-  }
+    setIntervalID(temp);
+  }, 500);
 
   // inital sdk setup
   useEffect(() => {
@@ -134,13 +158,11 @@ function App() {
       console.log("not logged in or error");
       return;
     }
-    console.log("init sdk set up");
+    console.log("Spotify Sync Connected");
 
-    // getIsPlaying(spotUser);
-    loopy();
-  }, [spotUser]);
-
-  // call once every second so that the player is up to date with any changes
+    getIsPlaying(spotUser);
+    debounceInterval();
+  }, [spotUser, intervalID]);
 
   return (
     <>
