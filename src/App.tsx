@@ -167,6 +167,14 @@ function App() {
   return (
     <>
       <div className="h-screen w-screen bg-slate-600/75">
+        <div className="absolute bg-cover bg-center transition-[background] duration-[2s] ease-in-out z-[-10] h-full w-full blur-2xl transform-gpu">
+          <img
+            className="h-full w-full bg-auto"
+            src={
+              appInfo === null ? "nosong.png" : appInfo.nowPlaying?.image.url
+            }
+          ></img>
+        </div>
         {spotUser == null ? (
           <div className="flex justify-center items-center flex-col h-screen ">
             <h1>Welcome! Please Connect your spotify account</h1>
