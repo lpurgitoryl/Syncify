@@ -12,6 +12,20 @@ interface UIProps {
   endTime: number | undefined;
 }
 
+function formatPercentage(
+  startMS: number | undefined,
+  endMS: number | undefined
+): number {
+  if (startMS === undefined || endMS === undefined) {
+    return 0;
+  }
+
+  let temp = startMS / endMS;
+  temp = Math.floor(temp * 100);
+  console.log("slider value at", temp);
+  return temp;
+}
+
 function PlayerDefault({
   img,
   title,
@@ -68,6 +82,7 @@ function PlayerDefault({
                   defaultValue={[0]}
                   max={100}
                   step={1}
+                  value={[formatPercentage(startTime, endTime)]}
                 >
                   <Slider.Track className="relative flex-grow h-1 bg-gray-700 rounded-full">
                     <Slider.Range className="absolute bg-white rounded-full h-full" />
