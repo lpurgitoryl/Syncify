@@ -49,11 +49,11 @@ function PlayerDefault({
         {/* </div> */}
 
         <div className="h-full w-full flex align-center justify-center">
-          <div className="flex flex-col flex-shrink-0 w-full justify-center px-10 gap-12">
-            <div className="relative">
+          <div className="flex flex-col flex-shrink-0 w-full justify-center px-10 gap-12 lg:flex-row lg:items-center">
+            <div className="relative lg:w-10/12">
               <img
                 src={img === undefined ? "nosong.png" : img.url}
-                className="rounded-2xl h-auto w-full shadow-md bg-black"
+                className="rounded-2xl h-auto w-full shadow-md bg-black "
               />
             </div>
             <div className="flex flex-col w-full text-white break-words">
