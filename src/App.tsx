@@ -51,10 +51,10 @@ function App() {
       window.location.hostname === "localhost" ||
       window.location.hostname.indexOf(myUrlPattern) >= 0
     ) {
-      alert("It's a local server!");
+     // alert("It's a local server!");
     } else {
       isLocal = false;
-      alert("It's not a local server!" + window.location.hostname);
+     // alert("It's not a local server!" + window.location.hostname);
     }
 
     const sdk = SpotifyApi.withUserAuthorization(
