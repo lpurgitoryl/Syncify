@@ -51,10 +51,10 @@ function App() {
       window.location.hostname === "localhost" ||
       window.location.hostname.indexOf(myUrlPattern) >= 0
     ) {
-      alert("It's a local server!");
+     // alert("It's a local server!");
     } else {
       isLocal = false;
-      alert("It's not a local server!" + window.location.hostname);
+      //alert("It's not a local server!" + window.location.hostname);
     }
 
     const sdk = SpotifyApi.withUserAuthorization(
@@ -71,8 +71,8 @@ function App() {
     );
 
     // this is just to create the redirect, I dont actually use the user's email info
-    const user = await sdk.currentUser.profile();
-    console.log(sdk, user);
+   // const user = await sdk.currentUser.profile();
+   // console.log(sdk, user);
     setSpotUser(sdk);
   }
 
