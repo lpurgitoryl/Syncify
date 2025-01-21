@@ -71,8 +71,8 @@ function App() {
     );
 
     // this is just to create the redirect, I dont actually use the user's email info
-   // const user = await sdk.currentUser.profile();
-   // console.log(sdk, user);
+   const user = await sdk.currentUser.profile();
+  console.log(sdk, user);
     setSpotUser(sdk);
   }
 
